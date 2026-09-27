@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>流体/烟雾模拟 — Stable Fluids (WebGL + Worker)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<aside id="panel">
+  <h1>流体模拟</h1>
+
+  <div class="group">
+    <label>求解器模式
+      <select id="mode">
+        <option value="webgl" selected>WebGL2 (GPU)</option>
+        <option value="cpu">CPU (Web Worker)</option>
+      </select>
+    </label>
+    <label>网格分辨率
+      <select id="resolution">
+        <option value="64">64 × 64</option>
+        <option value="128" selected>128 × 128</option>
+        <option value="256">256 × 256</option>
+        <option value="512">512 × 512</option>
+        <option value="1024">1024 × 1024 (仅 GPU)</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="group">
+    <label>压力迭代 <span class="val" id="itersVal">30</span>
+      <input type="range" id="iters" min="4" max="80" step="1" value="30">
+    </label>
+    <label>喷射力度 <span class="val" id="forceVal">1.2</span>
+      <input type="range" id="force" min="0.2" max="5" step="0.1" value="1.2">
+    </label>
+    <label>喷溅半径 <span class="val" id="radiusVal">0.0018</span>
+      <input type="range" id="radius" min="0.0002" max="0.01" step="0.0001" value="0.0018">
+    </label>
+    <label>染料耗散 <span class="val" id="dyeDissVal">0.35</span>
+      <input type="range" id="dyeDiss" min="0" max="2" step="0.05" value="0.35">
+    </label>
+    <label>速度耗散 <span class="val" id="velDissVal">0.10</span>
+      <input type="range" id="velDiss" min="0" max="1" step="0.05" value="0.10">
+    </label>
+  </div>
+
+  <div class="group row">
+    <label class="check"><input type="checkbox" id="autoDegrade" checked> 自动降级</label>
+    <button id="pauseBtn">暂停</button>
+    <button id="resetBtn">重置</button>
+  </div>
+
+  <div class="group stats">
+    <h2>性能</h2>
+    <div class="stat"><span>FPS</span><b id="stFps">—</b></div>
+    <div class="stat"><span>帧耗时</span><b id="stFrame">—</b></div>
+    <div class="stat"><span>模拟耗时</span><b id="stSim">—</b></div>
+    <div class="stat"><span>网格规模</span><b id="stGrid">—</b></div>
+    <div class="stat"><span>显存/内存估算</span><b id="stMem">—</b></div>
+    <div class="stat"><span>长任务 (&gt;50ms)</span><b id="stLongtask">0</b></div>
+    <div class="stat"><span>降级次数</span><b id="stDegrade">0</b></div>
+  </div>
+
+  <div class="group">
+    <h2>事件日志</h2>
+    <ul id="log"></ul>
+  </div>
+
+  <p class="hint">在画布上移动/拖动鼠标注入烟雾与速度。GPU 不可用时自动回退到 CPU Worker 模式。</p>
+</aside>
+
+<main id="stage">
+  <canvas id="glCanvas"></canvas>
+  <canvas id="cpuCanvas" hidden></canvas>
+  <div id="overlay">WebGL2 初始化中…</div>
+</main>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
